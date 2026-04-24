@@ -214,3 +214,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+AGENTS.md
+labs/
+examples/
+
+# Local ingest buffer
+data_local/
+
