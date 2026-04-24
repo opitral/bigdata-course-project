@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping
 
-SCHEMA_V = 1
+from common.paths import bronze_partition_key
 
 
 @dataclass(frozen=True)
@@ -28,13 +28,7 @@ class PartitionSlot:
 
     @property
     def relative_dir(self) -> str:
-        return (
-            f"bronze/domain={self.domain}"
-            f"/source={self.source}"
-            f"/schema_v={SCHEMA_V}"
-            f"/ingest_date={self.ingest_date}"
-            f"/hour={self.hour}"
-        )
+        return bronze_partition_key(self.domain, self.source, self.ingest_date, self.hour)
 
     @property
     def file_name(self) -> str:

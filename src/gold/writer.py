@@ -4,7 +4,8 @@ from typing import Sequence
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import lit
 
-from gold.paths import SCHEMA_VERSION, gold_output_path
+from common.constants import SCHEMA_VERSION
+from common.paths import gold_write_uri
 
 
 logger = logging.getLogger("gold.writer")
@@ -29,7 +30,7 @@ def persist_metric(
     output_format: str,
     repartition_size: int = 4,
 ) -> str:
-    write_path = gold_output_path(domain, metric_name, run_id)
+    write_path = gold_write_uri(domain, metric_name, run_id)
     partitioned = df.repartition(repartition_size, *partition_cols)
 
     writer = partitioned.write.mode("append").partitionBy(*partition_cols)

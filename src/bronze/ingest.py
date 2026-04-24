@@ -9,6 +9,7 @@ from typing import List, Optional
 
 from dotenv import load_dotenv
 
+from common.author import resolve_author
 from common.logging_setup import configure_logging
 from common.r2_storage import R2Settings, R2Storage
 from bronze.partition import PartitionSlot, write_jsonl_to_disk
@@ -16,7 +17,6 @@ from bronze.record import utc_now
 from bronze.sources import COLLECTORS, STATIC_DOMAINS
 
 
-DEFAULT_AUTHOR = "slobodian"
 DEFAULT_INTERVAL_SECONDS = 600
 DEFAULT_MAX_ITERATIONS = 0
 DEFAULT_LOCAL_ROOT = "data_local"
@@ -42,7 +42,7 @@ class IngestConfig:
         if unknown:
             raise RuntimeError(f"Unknown domain(s) in INGEST_DOMAINS: {', '.join(unknown)}")
         return cls(
-            author=os.environ.get("AUTHOR_SURNAME", DEFAULT_AUTHOR),
+            author=resolve_author(),
             interval_seconds=int(os.environ.get("INGEST_INTERVAL_SECONDS", DEFAULT_INTERVAL_SECONDS)),
             max_iterations=int(os.environ.get("INGEST_MAX_ITERATIONS", DEFAULT_MAX_ITERATIONS)),
             local_root=Path(os.environ.get("LOCAL_DATA_ROOT", DEFAULT_LOCAL_ROOT)).expanduser(),

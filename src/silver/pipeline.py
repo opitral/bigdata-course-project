@@ -1,61 +1,44 @@
 import argparse
 import logging
-import os
 import sys
 import uuid
 
 from dotenv import load_dotenv
 
+from common.author import resolve_author
+from common.paths import bronze_read_uri, silver_write_uri
+from common.spark import build_spark_session
 from silver.transforms.common import (
-    build_spark_session,
-    reject_invalid_timestamps,
-    enrich_with_author,
     apply_repartition,
+    enrich_with_author,
+    reject_invalid_timestamps,
 )
 from silver.transforms.weather import (
-    flatten_weather_payload,
-    reject_null_fields,
     apply_weather_domain_filters,
     drop_duplicate_events,
+    flatten_weather_payload,
+    reject_null_fields,
 )
-
-SCHEMA_VERSION = 1
-BUCKET = "data"
 
 logger = logging.getLogger("silver")
 
 
-def bronze_read_path(domain: str, source: str) -> str:
-    return (
-        f"s3a://{BUCKET}/raw/bronze"
-        f"/domain={domain}"
-        f"/source={source}"
-        f"/schema_v={SCHEMA_VERSION}"
-        "/ingest_date=*"
-        "/hour=*"
-    )
-
-
-def silver_write_path(domain: str, source: str, run_id: str) -> str:
-    return (
-        f"s3a://{BUCKET}/processed/silver"
-        f"/domain={domain}"
-        f"/source={source}"
-        f"/schema_v={SCHEMA_VERSION}"
-        f"/run_id={run_id}"
-    )
-
-
 def run_weather_pipeline(domain: str, source: str, output_format: str) -> None:
-    author = os.environ.get("AUTHOR_SURNAME", "slobodian")
+    author = resolve_author()
     run_id = uuid.uuid4().hex[:12]
 
-    logger.info("Starting silver pipeline: domain=%s source=%s run_id=%s author=%s", domain, source, run_id, author)
+    logger.info(
+        "Starting silver pipeline: domain=%s source=%s run_id=%s author=%s",
+        domain,
+        source,
+        run_id,
+        author,
+    )
 
     spark = build_spark_session(f"silver-{domain}-{source}")
 
     try:
-        read_path = bronze_read_path(domain, source)
+        read_path = bronze_read_uri(domain, source)
         logger.info("Reading bronze from: %s", read_path)
 
         raw_df = spark.read.option("mode", "PERMISSIVE").json(read_path)
@@ -77,7 +60,7 @@ def run_weather_pipeline(domain: str, source: str, output_format: str) -> None:
             logger.warning("No valid records after filtering — skipping write for run_id=%s", run_id)
             return
 
-        write_path = silver_write_path(domain, source, run_id)
+        write_path = silver_write_uri(domain, source, run_id)
         output_df = apply_repartition(deduped_df, 8)
 
         if output_format == "parquet":

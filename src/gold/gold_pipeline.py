@@ -7,9 +7,10 @@ from typing import Iterable
 
 from dotenv import load_dotenv
 
+from common.author import resolve_author
+from common.paths import silver_read_uri
+from common.spark import build_spark_session
 from gold.metrics import WEATHER_METRIC_REGISTRY
-from gold.paths import silver_input_path
-from gold.spark_context import create_gold_spark_session
 from gold.writer import finalize_metric_frame, persist_metric
 
 
@@ -35,7 +36,7 @@ def select_metrics(domain: str, requested: Iterable[str] | None) -> dict:
 
 
 def run_gold_pipeline(domain: str, source: str, output_format: str, metric_names: Iterable[str] | None) -> None:
-    author = os.environ.get("AUTHOR_SURNAME", "slobodian")
+    author = resolve_author()
     run_id = uuid.uuid4().hex[:12]
 
     logger.info("Gold pipeline started | domain=%s source=%s run_id=%s author=%s", domain, source, run_id, author)
@@ -43,10 +44,10 @@ def run_gold_pipeline(domain: str, source: str, output_format: str, metric_names
     metric_plan = select_metrics(domain, metric_names)
     logger.info("Metrics to build: %s", list(metric_plan.keys()))
 
-    spark = create_gold_spark_session(f"gold-{domain}-{source}-{run_id}")
+    spark = build_spark_session(f"gold-{domain}-{source}-{run_id}")
 
     try:
-        read_path = silver_input_path(domain, source)
+        read_path = silver_read_uri(domain, source)
         logger.info("Reading Silver from: %s", read_path)
         silver_df = spark.read.parquet(read_path)
         silver_df = silver_df.filter(silver_df["author"] == author)

@@ -3,7 +3,7 @@ import os
 from pyspark.sql import SparkSession
 
 
-def create_gold_spark_session(app_name: str) -> SparkSession:
+def build_spark_session(app_name: str) -> SparkSession:
     account_id = os.environ["R2_ACCOUNT_ID"]
     access_key = os.environ["R2_ACCESS_KEY_ID"]
     secret_key = os.environ["R2_SECRET_ACCESS_KEY"]

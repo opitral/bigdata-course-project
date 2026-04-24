@@ -3,7 +3,7 @@ import hashlib
 import uuid
 from typing import Any, Dict, Optional
 
-SCHEMA_VERSION = 1
+from common.constants import SCHEMA_VERSION
 
 
 def utc_now() -> dt.datetime:
