@@ -222,3 +222,4 @@ examples/
 # Local ingest buffer
 data_local/
 
+jars/
