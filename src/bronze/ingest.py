@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 
 from common.logging_setup import configure_logging
 from common.r2_storage import R2Settings, R2Storage
-from lab1_ingest.partition import PartitionSlot, write_jsonl_to_disk
-from lab1_ingest.record import utc_now
-from lab1_ingest.sources import COLLECTORS, STATIC_DOMAINS
+from bronze.partition import PartitionSlot, write_jsonl_to_disk
+from bronze.record import utc_now
+from bronze.sources import COLLECTORS, STATIC_DOMAINS
 
 
 DEFAULT_AUTHOR = "slobodian"
@@ -22,7 +22,7 @@ DEFAULT_MAX_ITERATIONS = 0
 DEFAULT_LOCAL_ROOT = "data_local"
 DEFAULT_DOMAINS = ("weather", "traffic", "alerts", "roads")
 
-logger = logging.getLogger("lab1_ingest")
+logger = logging.getLogger("bronze")
 
 
 @dataclass(frozen=True)

@@ -1,8 +1,8 @@
 from typing import Dict, List
 from urllib.parse import urlencode
 
-from lab1_ingest.http_client import DEFAULT_TIMEOUT, shared_session
-from lab1_ingest.record import build_record, stable_event_id
+from bronze.http_client import DEFAULT_TIMEOUT, shared_session
+from bronze.record import build_record, stable_event_id
 
 SOURCE_NAME = "open_meteo_current"
 API_ENDPOINT = "https://api.open-meteo.com/v1/forecast"

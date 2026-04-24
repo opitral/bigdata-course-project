@@ -2,8 +2,8 @@ import base64
 import hashlib
 from typing import Dict, List
 
-from lab1_ingest.http_client import DEFAULT_TIMEOUT, shared_session
-from lab1_ingest.record import build_record, stable_event_id
+from bronze.http_client import DEFAULT_TIMEOUT, shared_session
+from bronze.record import build_record, stable_event_id
 
 SOURCE_NAME = "lviv_gtfs_rt"
 API_ENDPOINT = "https://track.ua-gis.com/gtfs/lviv/vehicle_position"

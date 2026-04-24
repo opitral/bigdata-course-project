@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from lab1_ingest.http_client import DEFAULT_TIMEOUT, shared_session
-from lab1_ingest.record import build_record, stable_event_id
+from bronze.http_client import DEFAULT_TIMEOUT, shared_session
+from bronze.record import build_record, stable_event_id
 
 SOURCE_NAME = "vadimkin_air_raid"
 GITHUB_TREE_URL = (
