@@ -223,3 +223,6 @@ examples/
 data_local/
 
 jars/
+
+# ML artifacts and local datasets
+reports/
